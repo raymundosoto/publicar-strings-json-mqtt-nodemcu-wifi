@@ -13,24 +13,24 @@
  */
 
 //Bibliotecas
-#include <ESP8266WiFi.h>  // Biblioteca para el control de WiFi
+#include <WiFi.h> // Biblioteca para el control de WiFi
 #include <PubSubClient.h> //Biblioteca para conexion MQTT
 
 //Datos de WiFi
-const char* ssid = "nombre-ssid";  // Aquí debes poner el nombre de tu red
-const char* password = "contraseña";  // Aquí debes poner la contraseña de tu red
+const char* ssid = "TOTALPLAY_49C538";  // Aquí debes poner el nombre de tu red
+const char* password = "T0T42W1WS1";  // Aquí debes poner la contraseña de tu red
 
 //Datos del broker MQTT
-const char* mqtt_server = "192.168.1.1"; // Si estas en una red local, coloca la IP asignada, en caso contrario, coloca la IP publica
-IPAddress server(192,168,1,1);
+const char* mqtt_server = "192.168.100.97"; // Si estas en una red local, coloca la IP asignada, en caso contrario, coloca la IP publica
+IPAddress server(192,168,100,97);
 
 // Objeros
 WiFiClient espClient; // Este objeto maneja los datos de conexion WiFi
 PubSubClient client(espClient); // Este objeto maneja los datos de conexion al broker
 
 // Variables
-int ledPin = D4;  // Para indicar el estatus de conexión
-int ledPin2 = D0; // Para mostrar mensajes recibidos
+int ledPin = 4;  // Para indicar el estatus de conexión
+int ledPin2 = 33; // Para mostrar mensajes recibidos
 long timeNow, timeLast; // Variables de control de tiempo no bloqueante
 int wait = 5000;  // Indica la espera cada 5 segundos para envío de mensajes MQTT
 
@@ -92,12 +92,12 @@ void loop() {
     timeLast = timeNow; // Actualización de seguimiento de tiempo
 
     //Se construye el string correspondiente al JSON que contiene 3 variables
-    String json = "{\"id\":\"Hugo\",\"temp\":"+String(random(18, 23))+",\"hum\":"+String(random (38,52))+"}";
+    String json = "{\"id\":\"Raymundo\",\"temp\":"+String(random(18, 23))+",\"hum\":"+String(random (38,52))+"}";
     Serial.println(json); // Se imprime en monitor solo para poder visualizar que el string esta correctamente creado
     int str_len = json.length() + 1;//Se calcula la longitud del string
     char char_array[str_len];//Se crea un arreglo de caracteres de dicha longitud
     json.toCharArray(char_array, str_len);//Se convierte el string a char array    
-    client.publish("codigoIoT/esp32/dht", char_array); // Esta es la función que envía los datos por MQTT, especifica el tema y el valor
+    client.publish("codigoIoT/ejemplo/mqtt", char_array); // Esta es la función que envía los datos por MQTT, especifica el tema y el valor
   }// fin del if (timeNow - timeLast > wait)
 }// fin del void loop ()
 
@@ -126,7 +126,7 @@ void callback(char* topic, byte* message, unsigned int length) {
 
   // Ejemplo, en caso de recibir el mensaje true - false, se cambiará el estado del led soldado en la placa.
   // El NodeMCU está suscrito al tema esp/output
-  if (String(topic) == "esp32/output") {  // En caso de recibirse mensaje en el tema esp32/output
+  if (String(topic) == "codigo/ejemplo/mqttin") {  // En caso de recibirse mensaje en el tema esp32/output
     if(messageTemp == "true"){
       Serial.println("Led encendido");
       digitalWrite(ledPin2, LOW);
@@ -146,7 +146,7 @@ void reconnect() {
     // Intentar reconexión
     if (client.connect("ESP8266Client")) { //Pregunta por el resultado del intento de conexión
       Serial.println("Conectado");
-      client.subscribe("esp32/output"); // Esta función realiza la suscripción al tema
+      client.subscribe("codigoIoT/ejemplo/mqttin"); // Esta función realiza la suscripción al tema
     }// fin del  if (client.connect("ESP8266Client"))
     else {  //en caso de que la conexión no se logre
       Serial.print("Conexion fallida, Error rc=");
